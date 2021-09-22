@@ -1,0 +1,51 @@
+#!/bin/bash
+
+rm -rf .bash*
+ln -sf /dev/null .bash_history
+sudo passwd ubuntu
+mkdir -p ~/app/file
+mkdir -p ~/app/config
+touch ~/app/file/database.db
+wget -P ~/app/config https://raw.githubusercontent.com/syuneara/neara_apps/main/download
+wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+sudo apt update
+sudo apt install -y vim pip openvpn ./cloudflared-linux-amd64.deb
+sudo apt upgrade -y
+sudo /bin/dd if=/dev/zero of=/var/swap bs=1M count=2000
+sudo /sbin/mkswap /var/swap
+sudo /sbin/swapon /var/swap
+sudo curl -fsSL https://get.docker.com/ | sh
+sudo pip install docker-compose
+sudo gpasswd -a $USER docker
+echo /var/swap swap swap defaults | sudo tee -a /etc/fstab
+sudo sysctl -p
+sudo chmod +x  ~/app/config/download
+sudo chmod -R 644 /etc/update-motd.d
+echo 'sudo chown ubuntu:ubuntu /mnt/vol/' >.profile
+rm -rf .ssh .viminfo .wget-hsts cloudflared-linux-amd64.deb
+touch .bashrc
+cloudflared tunnel login
+cloudflared tunnel create server
+cat <<EOF >~/.cloudflared/config.yml
+tunnel: UUID
+credentials-file: /home/ubuntu/.cloudflared/UUID.json
+
+ingress:
+  - hostname: lxde.neara.cyou
+    service: http://172.20.0.2:80
+  - hostname: file.neara.cyou
+    service: http://172.20.0.4:80
+  - hostname: book.neara.cyou
+    service: http://172.20.0.5:9000
+  - hostname: host.neara.cyou
+    service: ssh://localhost:22
+  - service: http_status:404
+EOF
+echo TOKEN
+read TOKEN
+cat <<EOF >~/TOKEN.txt
+${TOKEN}
+EOF
+sudo vi /etc/motd
+sudo vi /etc/ssh/sshd_config
+echo HHDの設定

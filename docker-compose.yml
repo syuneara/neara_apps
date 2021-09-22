@@ -1,0 +1,77 @@
+version: '3.7'
+networks:
+  app_net:
+    name: app_net
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+services:
+  lxde:
+    build: .
+    image: lxde
+    container_name: lxde
+    hostname: lxde
+    cap_add:
+      - SYS_ADMIN
+    environment:
+      - RESOLUTION=1920x910
+    volumes:
+      - $HOME/var:/root/var:cached
+      - $HOME/app/lxde:/root/.config/qBittorrent:cached
+      - /dev/shm:/dev/shm:cached
+    restart: unless-stopped
+    networks:
+      app_net:
+        ipv4_address: 172.20.0.2
+  wire:
+    image: linuxserver/wireguard
+    container_name: wire
+    hostname: wire
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Tokyo
+      - SERVERPORT=51820
+      - PEERS=1
+      - PEERDNS=auto
+      - INTERNAL_SUBNET=10.13.13.0
+      - ALLOWEDIPS=0.0.0.0/0
+    volumes:
+      - $HOME/app/wire:/config:cached
+      - /lib/modules:/lib/modules:ro
+    ports:
+      - 51820:51820/udp
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: unless-stopped
+    networks:
+      app_net:
+        ipv4_address: 172.20.0.3
+  file:
+    image: filebrowser/filebrowser
+    container_name: file
+    hostname: file
+    volumes:
+      - $HOME/var:/srv:cached
+      - $HOME/app/file/database.db:/database.db:cached
+    restart: unless-stopped
+    networks:
+      app_net:
+        ipv4_address: 172.20.0.4
+  book:
+    image: hkalexling/mango
+    container_name: book
+    hostname: book
+    volumes:
+      - $HOME/var/book:/root/mango/library:cached
+      - $HOME/app/book/workdir:/root/mango:cached
+      - $HOME/app/book/confdir:/root/.config/mango:cached
+    restart: unless-stopped
+    networks:
+      app_net:
+        ipv4_address: 172.20.0.5

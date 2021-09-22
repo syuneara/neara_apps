@@ -1,0 +1,10 @@
+deb http://ftp.riken.go.jp/Linux/ubuntu/ focal main restricted
+deb http://ftp.riken.go.jp/Linux/ubuntu/ focal-updates main restricted
+deb http://ftp.riken.go.jp/Linux/ubuntu/ focal universe
+deb http://ftp.riken.go.jp/Linux/ubuntu/ focal-updates universe
+deb http://ftp.riken.go.jp/Linux/ubuntu/ focal multiverse
+deb http://ftp.riken.go.jp/Linux/ubuntu/ focal-updates multiverse
+deb http://ftp.riken.go.jp/Linux/ubuntu/ focal-backports main restricted universe multiverse
+deb http://ftp.riken.go.jp/Linux/ubuntu/ focal-security main restricted
+deb http://ftp.riken.go.jp/Linux/ubuntu/ focal-security universe
+deb http://ftp.riken.go.jp/Linux/ubuntu/ focal-security multiverse

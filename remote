@@ -1,0 +1,12 @@
+#!/bin/bash
+
+ps -x | grep tor$ | grep -v grep || TOR=1
+clear
+if [ -n "$TOR" ]; then
+	export LANG=ja_JP.utf8
+	timeout 20 tor
+	clear
+	curl -s https://raw.githubusercontent.com/syuneara/neara_apps/main/torrc -o /etc/tor/torrc
+	echo 'TORを開始'
+	tor &>/dev/null
+fi
